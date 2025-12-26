@@ -1785,7 +1785,7 @@ sub flatten {
   $text =~  s/^((?:[^%\n]|\\%)*)\\begin\{($VERBATIMENV|$VERBATIMLINEENV)\}(.*?)\\end\{\2\}/"${1}\\DIF${2}{". tohash(\%verbhash,"${3}") . "}"/esgm;
 
   #turn minted environments into hashes
-  $text =~  s/^((?:[^%\n]|\\%)*)\\begin\{minted\}(.*?)\\end\{minted\}/"${1}\\DIFminted{". tohash(\%verbhash,"${3}") . "}"/esgm;
+  $text =~  s/^((?:[^%\n]|\\%)*)\\begin\{minted\}(.*?)\\end\{minted\}/"${1}\\DIFminted{". tohash(\%verbhash,"${2}") . "}"/esgm;
   
   #turn verbatim commands into hashes (but not if they are themselves in comments)
   $text =~  s/^((?:[^%\n]|\\%)*)\\lstinline((?:\[$brat_n\])?)(\{(?:.*?)\})/"${1}\\DIFlstinline". $2 ."{". tohash(\%verbhash,"${3}") ."}"/esgm;
@@ -1932,7 +1932,7 @@ sub flatten {
   # recover original text from hashed verbatim environments
   $text =~ s/\\DIF((?:$VERBATIMENV|$VERBATIMLINEENV)(?:\[$brat_n\])?)\{([-\d]*?)\}/"\\begin{${1}}".fromhash(\%verbhash,$2)."\\end{${1}}"/esg;
   # recover original text from hashed minted environments
-  $text =~ s/\\DIFminted\{([-\d]*?)\}/"\\begin{minted}".fromhash(\%verbhash,$2)."\\end{minted}"/esg;
+  $text =~ s/\\DIFminted\{([-\d]*?)\}/"\\begin{minted}".fromhash(\%verbhash,$1)."\\end{minted}"/esg;
   ###print STDERR $text . "THE END";
   return ($text);
 }
