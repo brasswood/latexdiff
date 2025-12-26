@@ -3178,9 +3178,9 @@ sub reversemintedlinecomment {
     # There is a bug in listings package (at least v1.5b) for empty comments where the actual comment command is not made invisible
     # I therefore have to introduce an artificial '-' character at the end of empty added or deleted lines
     $verbatimtext =~ s/($DELCOMMENT\s*)$/$1-/mg;
-    $verbatimtext = "\\DIFmodbegin\n\\begin{minted}${verbatimtext}\\end{minted}\n\\DIFmodend";
+    $verbatimtext = "\\DIFmodbegin\n\\begin{minted}${mintedopts}${verbatimtext}\\end{minted}\n\\DIFmodend";
   } else {
-    $verbatimtext = "\\begin{minted}${verbatimtext}\\end{minted}";
+    $verbatimtext = "\\begin{minted}${mintedopts}${verbatimtext}\\end{minted}";
   }
   ### print STDERR "DEBUG REVERSELINECOMMENT output: |$verbatimtext|\n" if $debug;
   return ($verbatimtext);
