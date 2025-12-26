@@ -3152,6 +3152,39 @@ sub reverselinecomment {
   return ($verbatimtext);
 }
 
+# $simple=reversemintedlinecomment($mintedopts $string)
+# remove DIFVRB comments but leave changed lines marked
+sub reversemintedlinecomment {
+  my ( $mintedopts, $verbatimtext ) = @_;
+  ### print STDERR "DEBUG REVERSELINECOMMENT input: $environment,|$verbatimtext|\n" if $debug;
+  # remove markup added by latexdiff
+  # (this should occur only if the type of verbatim environment was changed)
+  # (note that this destroys some information in old file)
+  #  in theory I could save it by moving it out of the verbatim environment
+  #  but this requires more bookkeeping and is probably not necessary)
+  $verbatimtext =~ s/\\DIFaddbegin //g;
+  $verbatimtext =~ s/\\DIFaddend //g;
+  $verbatimtext =~ s/\\DIFdelbegin //g;
+  $verbatimtext =~ s/\\DIFdelend //g;
+  $verbatimtext =~ s/$DELCMDOPEN.*//g;
+
+  # remove DIFVRB mark
+  $verbatimtext =~ s/%$VERBCOMMENT//g;
+
+  # remove part of the markup in changed lines
+  # if any of these substitution was made, then there was at least
+  # one changed line, and we have to extend the style
+  if ( $verbatimtext =~ s/$VERBCOMMENT//g ) {
+    # There is a bug in listings package (at least v1.5b) for empty comments where the actual comment command is not made invisible
+    # I therefore have to introduce an artificial '-' character at the end of empty added or deleted lines
+    $verbatimtext =~ s/($DELCOMMENT\s*)$/$1-/mg;
+    $verbatimtext = "\\DIFmodbegin\n\\begin{${environment}}${verbatimtext}\\end{${environment}}\n\\DIFmodend";
+  } else {
+    $verbatimtext = "\\begin{${environment}}${verbatimtext}\\end{${environment}}";
+  }
+  ### print STDERR "DEBUG REVERSELINECOMMENT output: |$verbatimtext|\n" if $debug;
+  return ($verbatimtext);
+}
 #hashstring=tohash(\%hash,$string)
 # creates a hash value based on string and stores in %hash
 sub tohash {
@@ -3744,6 +3777,8 @@ sub postprocess {
     # > \end{verbatim}
     # > \DIFmodend
     s/(?<!$DELCMDOPEN)\\begin\{($VERBATIMLINEENV)\}(.*?)(?<!$DELCMDOPEN)\\end\{\1\}/"". reverselinecomment($1, $2) .""/esg;
+
+    s/(?<!$DELCMDOPEN)\\begin\{minted\}((?:\[.*?\])?\{.*?\})(.*?)(?<!$DELCMDOPEN)\\end\{minted\}/"". reversemintedlinecomment($1, $2) .""/esg;
     #    # we do the same for deleted environments but additionally reinstate the framing commands
     #   s/$DELCMDOPEN\\begin\{($VERBATIMLINEENV)\}$extraspace(?:\[$brat0\])?$DELCMDCLOSE(.*?)$DELCMDOPEN\\end\{\1\}$DELCMDCLOSE/"\\begin{$1}". reverselinecomment($2) . "\\end{$1}"/esg;
 ##    s/$DELCMDOPEN\\begin\{($VERBATIMLINEENV)\}($extraspace(?:\[$brat0\])?\s*)(?:\n|$DELCMDOPEN)*$DELCMDCLOSE((?:\%$DELCOMMENT$VERBCOMMENT.*?\n)*)($DELCMDOPEN\\end\{\1\}(?:\n|\s|$DELCMDOPEN)*$DELCMDCLOSE)/"SUBSTITUTION: \\begin{$1}$2 INTERIOR: |$3| END: |$4|"/esg;
