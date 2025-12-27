@@ -3777,9 +3777,11 @@ sub postprocess {
     # > %DIF > new verbatim line
     # > \end{verbatim}
     # > \DIFmodend
+    writedebugfile( $_, 'prereverse' );
     s/(?<!$DELCMDOPEN)\\begin\{($VERBATIMLINEENV)\}(.*?)(?<!$DELCMDOPEN)\\end\{\1\}/"". reverselinecomment($1, $2) .""/esg;
 
     s/(?<!$DELCMDOPEN)\\begin\{minted\}((?:\[.*?\])?\{.*?\})(.*?)(?<!$DELCMDOPEN)\\end\{minted\}/"". reversemintedlinecomment($1, $2) .""/esg;
+    writedebugfile( $_, 'postreverse' );
     #    # we do the same for deleted environments but additionally reinstate the framing commands
     #   s/$DELCMDOPEN\\begin\{($VERBATIMLINEENV)\}$extraspace(?:\[$brat0\])?$DELCMDCLOSE(.*?)$DELCMDOPEN\\end\{\1\}$DELCMDCLOSE/"\\begin{$1}". reverselinecomment($2) . "\\end{$1}"/esg;
 ##    s/$DELCMDOPEN\\begin\{($VERBATIMLINEENV)\}($extraspace(?:\[$brat0\])?\s*)(?:\n|$DELCMDOPEN)*$DELCMDCLOSE((?:\%$DELCOMMENT$VERBCOMMENT.*?\n)*)($DELCMDOPEN\\end\{\1\}(?:\n|\s|$DELCMDOPEN)*$DELCMDCLOSE)/"SUBSTITUTION: \\begin{$1}$2 INTERIOR: |$3| END: |$4|"/esg;
