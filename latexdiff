@@ -3024,7 +3024,7 @@ sub preprocess {
 ###    s/\\begin\{(verbatim\*?)\}(.*?)\\end\{\1\}/"\\${1}{". tohash(\%verbhash,"${2}") . "}"/esg;
     s/\\begin\{($VERBATIMENV)\}(.*?)\\end\{\1\}/"\\${1}{". tohash(\%verbhash,"${2}") . "}"/esg;
     s/\\begin\{($VERBATIMLINEENV)\}(.*?)\\end\{\1\}/"\\begin{$1}". linecomment($2) . "\\end{$1}"/esg;
-    s/\\begin\{minted\}(.*?)\\end\{minted\}/"\\begin{minted}". linecomment($1) . "\\end{minted}"/esg;
+    s/\\begin\{minted\}((?:\[.*?\])?\{.*?\})(.*?)\\end\{minted\}/"\\begin{minted}$1". linecomment($2) . "\\end{minted}"/esg;
 ###    writedebugfile($_,'preprocess-intermediate');
 
     # replace {,}, \frac,_,^ in comments with \CLEFTBRACE,\CRIGHTBRACE, \CFRAC, \CUNDERSCORE, \CCARET, respectively to protect from special treatment
