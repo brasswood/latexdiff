@@ -3800,6 +3800,10 @@ sub postprocess {
             . " $AUXCMD\n"  # close the auxiliary environment
             . $5               # and again leave the original deleted closing environment as is
       /esgx;    # Modifiers of substitution command
+      s/
+      (\Q$DELCMDOPEN\E\\begin\{minted\}(\Q$extraspace\E(?:\[$brat_n\])?\{.*?\}\s*)(?:\n|\Q$DELCMDOPEN\E)*\Q$DELCMDCLOSE\E)
+      ((?:\%\Q$DELCOMMENT$VERBCOMMENT\E[^\n]*?\n)*)
+      (\Q$DELCMDOPEN\E\\end\{minted\})/$1 . "$AUXCMD NEXT\n" . "" . reversemintedlinecomment($2, "$3") . " $AUXCMD\n" . $4/esgx;
 ###    s/\Q$DELCMDOPEN\E\\begin\{($VERBATIMLINEENV)\}/"SUBSTITUTION"/esgx;
     writedebugfile( $_, 'postprocess2' );
     # where changes have occurred in verbatim environment, change verbatim to DIFverbatim to allow mark-up
